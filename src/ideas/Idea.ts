@@ -70,6 +70,11 @@ export function update_ratings(first: Idea, second: Idea, preference: Preference
     first.elo += K_FACTOR * (score_first - expectation_first);
     second.elo += K_FACTOR * (score_second - expectation_second);
 
+    // The value is nicer when it's an integer
+    first.elo = Math.round(first.elo)
+    second.elo = Math.round(second.elo)
+
+
     // Also update the comparison count
     first.comparisons++;
     second.comparisons++;

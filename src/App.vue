@@ -1,47 +1,47 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { ref, type Ref } from 'vue'
+import { type Idea, create_idea } from './ideas/Idea'
+
+const new_idea_name = ref("")
+
+// For the sake of testing, let me rank teas I have
+const ideas_list: Ref<Idea[]> = ref([
+    create_idea("Genmaicha"),
+    create_idea("Rooibos"),
+    create_idea("English Breakfast"),
+    create_idea("Peach"),
+    create_idea("Earl Grey"),
+])
+
+function add_idea() {
+    const idea: Idea = create_idea(new_idea_name.value)
+    ideas_list.value.push(idea)
+    new_idea_name.value = ""
+}
+
+function remove_idea(idea: Idea) {
+    ideas_list.value = ideas_list.value.filter((x: Idea) => x !== idea);
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    <input type="text" v-model="new_idea_name" placeholder="idea"/>
+    <button type="button" @click="add_idea">Create idea</button>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div>
+        <h2>Ideas:</h2>
+        <div class="horizontal" v-for="idea in ideas_list" :key="idea.id">
+            <div>{{ idea.name }}</div>
+            <div>{{ idea.elo }}</div>
+            <button type="button" @click="remove_idea(idea)">X</button>
+        </div>
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
+<style>
+.horizontal {
     display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+    flex-direction: row;
+    justify-content: space-between;
 }
 </style>

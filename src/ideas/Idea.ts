@@ -1,12 +1,17 @@
 export interface Idea {
+    id: number,
     name: string,
     elo: number,
     comparisons: number
     cost?: number
 }
 
+let next_id: number = 0;
 export function create_idea(name: string, cost?: number): Idea {
+    const id = next_id;
+    next_id++;
     return {
+        id,
         name,
         elo: 1000,
         comparisons: 0,

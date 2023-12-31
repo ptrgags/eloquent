@@ -199,7 +199,7 @@ async function import_state(event: Event) {
             <tbody>
                 <tr v-for="idea in ideas_by_elo"
                     :key="idea.id"
-                    :class="{accurate: idea.comparisons > 3}">
+                    :class="{accurate: idea.comparisons >= 5}">
                     <td>{{ idea.name }}</td>
                     <td>{{ idea.elo }}</td>
                     <td>{{ idea.comparisons }}</td>

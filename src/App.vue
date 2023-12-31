@@ -2,16 +2,35 @@
 import { type ComputedRef, type Ref, ref, computed } from 'vue'
 import { type Idea, Preference, create_idea, update_ratings } from './ideas/Idea'
 
+interface PersistentState {
+    ideas: Idea[]
+}
+
 const new_idea_name = ref("")
 
+function loadState(): PersistentState {
+    const state_json = localStorage.getItem("eloquent")
+    if (state_json === null) {
+        return {
+            ideas: []
+        }
+    }
+
+    return JSON.parse(state_json) as PersistentState
+}
+
+const initialState = loadState();
+
 // For the sake of testing, let me rank teas I have
-const ideas_list: Ref<Idea[]> = ref([
-    create_idea("Genmaicha"),
-    create_idea("Rooibos"),
-    create_idea("English Breakfast"),
-    create_idea("Peach"),
-    create_idea("Earl Grey"),
-])
+const ideas_list: Ref<Idea[]> = ref(initialState.ideas);
+
+function saveState() {
+    const state = {
+        ideas: ideas_list.value
+    }
+
+    localStorage.setItem("eloquent", JSON.stringify(state))
+}
 
 function rand_index(array: any[]): number {
     return Math.floor(array.length * Math.random())
@@ -48,7 +67,7 @@ const first_option: ComputedRef<Idea | undefined> = computed(() => {
 })
 
 const second_option: ComputedRef<Idea | undefined> = computed(() => {
-    if (ideas_list.value.length < 2) {
+    if (!can_compare.value) {
         return undefined
     }
 
@@ -66,15 +85,20 @@ function add_idea() {
     new_idea_name.value = ""
 
     comparison_indices.value = choose_indices()
+    saveState();
 }
 
 function remove_idea(idea: Idea) {
     ideas_list.value = ideas_list.value.filter((x: Idea) => x !== idea);
+    saveState();
 }
 
 function select_preference(preference: Preference) {
     update_ratings(first_option.value!, second_option.value!, preference);
     comparison_indices.value = choose_indices()
+
+    // we updated the ideas list, so save the state
+    saveState();
 }
 
 </script>

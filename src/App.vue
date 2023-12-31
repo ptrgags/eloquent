@@ -127,6 +127,10 @@ function select_preference(preference: Preference) {
 </script>
 
 <template>
+    <h1>Eloquent</h1>
+    <br />
+    <p>Tool for ranking ideas using an Elo system like in Chess</p>
+    <br />
     <input type="text" v-model="new_idea_name" placeholder="idea"/>
     <button type="button" @click="add_idea">Create idea</button>
 
@@ -146,6 +150,33 @@ function select_preference(preference: Preference) {
 
     <div>
         <h2>Ideas:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Idea</th>
+                    <th>Elo</th>
+                    <th>Comparison Count</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="idea in ideas_by_elo"
+                    :key="idea.id"
+                    :class="{accurate: idea.comparisons > 3}">
+                    <td>{{ idea.name }}</td>
+                    <td>{{ idea.elo }}</td>
+                    <td>{{ idea.comparisons }}</td>
+                    <button type="button" @click="remove_idea(idea)">X</button>
+                </tr>
+            </tbody>
+        </table>
+        <!--
+        <div class="horizontal">
+            <div>Idea</div>
+            <div>Elo</div>
+            <div>Comparison Count</div>
+        </div>
+        
         <div :class="{
                 horizontal: true,
                 // TODO: base it on the length of the list
@@ -158,6 +189,7 @@ function select_preference(preference: Preference) {
             <div>{{ idea.comparisons }}</div>
             <button type="button" @click="remove_idea(idea)">X</button>
         </div>
+    -->
     </div>
 </template>
 
@@ -169,6 +201,7 @@ function select_preference(preference: Preference) {
 }
 
 .accurate {
-    background-color: #1ab7c3;
+    background-color: #1eb192;
+    color: #1d1d1d;
 }
 </style>

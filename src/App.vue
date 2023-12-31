@@ -108,12 +108,23 @@ function add_idea() {
     new_idea_name.value = ""
 
     comparison_indices.value = choose_indices()
-    saveState();
+    saveState()
 }
 
 function remove_idea(idea: Idea) {
-    ideas_list.value = ideas_list.value.filter((x: Idea) => x !== idea);
-    saveState();
+    ideas_list.value = ideas_list.value.filter((x: Idea) => x !== idea)
+    saveState()
+}
+
+function clear() {
+    ideas_list.value = []
+    saveState()
+}
+
+function reset_elo() {
+    for (const idea of ideas_list.value) {
+        idea.elo = 1000
+    }
 }
 
 function select_preference(preference: Preference) {
@@ -207,6 +218,8 @@ async function import_state(event: Event) {
                 </tr>
             </tbody>
         </table>
+        <button type="button" @click="clear">Clear</button>
+        <button type="button" @click="reset_elo">Reset Elo</button>
     </div>
     <div>
         <button type="button" @click="export_state">Export</button>

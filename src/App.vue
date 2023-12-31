@@ -139,6 +139,28 @@ function export_state() {
     a.remove();
 }
 
+function import_state_json(file: File): Promise<PersistentState> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => {
+            resolve(JSON.parse(reader.result as string))
+        }
+        reader.onerror = error => reject(error)
+        reader.readAsText(file)
+    })
+}
+
+async function import_state(event: Event) {
+    const target = event.target as HTMLInputElement
+
+    if (target.files?.length === 1) {
+        const file = target.files[0]
+        const state = await import_state_json(file)
+        ideas_list.value = state.ideas
+        saveState()
+    }
+}
+
 </script>
 
 <template>
@@ -188,6 +210,9 @@ function export_state() {
     </div>
     <div>
         <button type="button" @click="export_state">Export</button>
+        <br/>
+        Import:
+        <input type="file" @change="import_state" accept=".json"/>
     </div>
 </template>
 

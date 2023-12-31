@@ -36,12 +36,39 @@ function rand_index(array: any[]): number {
     return Math.floor(array.length * Math.random())
 }
 
+function rand_index_weighted<T>(
+    array: T[],
+    weight_func: (x: T) => number
+): number {
+    const total_weight = array.reduce((total: number, current: T) => total + weight_func(current), 0)
+
+    let selected_index;
+    while (selected_index === undefined) {
+        const index = rand_index(array);
+        const selected = array[index];
+
+        // The probability is weight / total
+        const prob = weight_func(selected) / total_weight;
+
+        if (Math.random() < prob) {
+            selected_index = index;
+        }
+    }
+
+    return selected_index;
+}
+
+const can_compare: ComputedRef<boolean> = computed(() => {
+    return ideas_list.value.length >= 2;
+})
+
 function choose_indices(): [number, number]  {
-    if (ideas_list.value.length < 2) {
+    if (!can_compare.value) {
         return [0, 0]
     }
 
-    const first: number = rand_index(ideas_list.value)
+    const lowest_comparisons_first = (x: Idea) => 1.0 / (x.comparisons + 1);
+    const first: number = rand_index_weighted(ideas_list.value, lowest_comparisons_first);
 
     let second: number = first;
     while (second === first) {
@@ -52,10 +79,6 @@ function choose_indices(): [number, number]  {
 }
 
 const comparison_indices = ref(choose_indices());
-
-const can_compare: ComputedRef<boolean> = computed(() => {
-    return ideas_list.value.length >= 2;
-})
 
 const first_option: ComputedRef<Idea | undefined> = computed(() => {
     if (!can_compare.value) {
@@ -132,6 +155,7 @@ function select_preference(preference: Preference) {
             :key="idea.id">
             <div>{{ idea.name }}</div>
             <div>{{ idea.elo }}</div>
+            <div>{{ idea.comparisons }}</div>
             <button type="button" @click="remove_idea(idea)">X</button>
         </div>
     </div>

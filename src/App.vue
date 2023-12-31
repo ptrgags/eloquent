@@ -124,6 +124,21 @@ function select_preference(preference: Preference) {
     saveState();
 }
 
+function export_state() {
+    const state = {
+        ideas: ideas_list.value
+    }
+
+    const state_json = JSON.stringify(state)
+    const data_url = `data:text/json;charset=utf-8,${encodeURIComponent(state_json)}`
+    const a = document.createElement('a')
+    a.href = data_url
+    a.download = 'state.json'
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
 </script>
 
 <template>
@@ -170,26 +185,9 @@ function select_preference(preference: Preference) {
                 </tr>
             </tbody>
         </table>
-        <!--
-        <div class="horizontal">
-            <div>Idea</div>
-            <div>Elo</div>
-            <div>Comparison Count</div>
-        </div>
-        
-        <div :class="{
-                horizontal: true,
-                // TODO: base it on the length of the list
-                accurate: idea.comparisons > 3
-            }"
-            v-for="idea in ideas_by_elo"
-            :key="idea.id">
-            <div>{{ idea.name }}</div>
-            <div>{{ idea.elo }}</div>
-            <div>{{ idea.comparisons }}</div>
-            <button type="button" @click="remove_idea(idea)">X</button>
-        </div>
-    -->
+    </div>
+    <div>
+        <button type="button" @click="export_state">Export</button>
     </div>
 </template>
 

@@ -113,6 +113,8 @@ function add_idea() {
 
 function remove_idea(idea: Idea) {
     ideas_list.value = ideas_list.value.filter((x: Idea) => x !== idea)
+
+    comparison_indices.value = choose_indices()
     saveState()
 }
 

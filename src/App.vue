@@ -121,9 +121,10 @@ function clear() {
     saveState()
 }
 
-function reset_elo() {
+function reset_comparisons() {
     for (const idea of ideas_list.value) {
         idea.elo = 1000
+        idea.comparisons = 0
     }
 }
 
@@ -219,7 +220,7 @@ async function import_state(event: Event) {
             </tbody>
         </table>
         <button type="button" @click="clear">Clear</button>
-        <button type="button" @click="reset_elo">Reset Elo</button>
+        <button type="button" @click="reset_comparisons">Reset Comparisons</button>
     </div>
     <div>
         <button type="button" @click="export_state">Export</button>

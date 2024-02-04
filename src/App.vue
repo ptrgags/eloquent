@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type ComputedRef, type Ref, type StyleValue, ref, computed } from 'vue'
-import { type Idea, Preference, create_idea, update_ratings } from './ideas/Idea'
+import { type Idea, Preference, create_idea, update_ratings, update_ids_on_import } from './ideas/Idea'
 
 interface PersistentState {
     ideas: Idea[]
@@ -16,7 +16,9 @@ function loadState(): PersistentState {
         }
     }
 
-    return JSON.parse(state_json) as PersistentState
+    const state = JSON.parse(state_json) as PersistentState
+    update_ids_on_import(state.ideas)
+    return state
 }
 
 const initialState = loadState();
@@ -29,7 +31,7 @@ function saveState() {
         ideas: ideas_list.value
     }
 
-    localStorage.setItem("eloquent", JSON.stringify(state))
+    localStorage.setItem("eloquent", JSON.stringify(state, undefined, 4))
 }
 
 function rand_index(array: any[]): number {
@@ -212,6 +214,7 @@ async function import_state(event: Event) {
     if (target.files?.length === 1) {
         const file = target.files[0]
         const state = await import_state_json(file)
+        update_ids_on_import(state.ideas)
         ideas_list.value = state.ideas
         saveState()
     }

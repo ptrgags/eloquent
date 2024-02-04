@@ -19,6 +19,13 @@ export function create_idea(name: string, cost?: number): Idea {
     }
 }
 
+// When importing a saved state, the next_id is not included, which can lead to
+// duplicate keys. So pass the maximum ID from the state, and we'll fix that.
+export function update_ids_on_import(ideas: Idea[]) {
+    const max_id = ideas.map(x => x.id).reduce((a, b) => Math.max(a, b), 0)
+    next_id = Math.max(next_id, max_id + 1)
+}
+
 // When prompted to choose between two items, do I prefer the first, the
 // second, or no preference
 export enum Preference {

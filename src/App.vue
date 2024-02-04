@@ -141,8 +141,12 @@ const ideas_by_elo: ComputedRef<(Idea & WithStyle)[]> = computed(() => {
 })
 
 function add_idea() {
+    if (new_idea_name.value === "") {
+        return
+    }
+
     const idea: Idea = create_idea(new_idea_name.value)
-    ideas_list.value.push(idea)
+    ideas_list.value = [...ideas_list.value, idea]
     new_idea_name.value = ""
 
     comparison_indices.value = choose_indices()
@@ -249,7 +253,7 @@ async function import_state(event: Event) {
                     <h2>Ideas</h2>
                     <p>Add ideas to the list with the input below. The table is listed in order by Elo ranking.</p>
                     <div class="centered">
-                        <input type="text" v-model="new_idea_name" placeholder="idea"/>
+                        <input type="text" v-model="new_idea_name" @keyup.enter="add_idea" placeholder="idea"/>
                         <button type="button" @click="add_idea">Create idea</button>
                     </div>
                     <table>

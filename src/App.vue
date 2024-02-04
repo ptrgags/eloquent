@@ -178,69 +178,187 @@ async function import_state(event: Event) {
 </script>
 
 <template>
-    <h1>Eloquent</h1>
-    <br />
-    <p>Tool for ranking ideas using an Elo system like in Chess</p>
-    <br />
-    <input type="text" v-model="new_idea_name" placeholder="idea"/>
-    <button type="button" @click="add_idea">Create idea</button>
-
-    <div>
-        <h2>Compare</h2>
-        <div class="horizontal">
-            <p>{{ first_option?.name }}</p>
-            <p>vs.</p>
-            <p>{{ second_option?.name }}</p>
+    <div class="container">
+        <div class="panel">
+            <h1><span class="highlight-elo">Elo</span>quent</h1>
+            <br />
+            <p>
+                A tool for the indecisive. Make a list of ideas and compare them
+                two at a time. This app uses the
+                <a href="https://en.m.wikipedia.org/wiki/Elo_rating_system">Elo rating system</a>
+                similar to chess to produce a ranking of ideas over time. It takes
+                many comparisons to make an accurate ranking, so take your time
+                and contemplate your choices. 
+            </p>
+            <details>
+                <summary>Example uses</summary>
+                <ul>
+                    <li>Enter some creative ideas and decide which are worthwhile</li>
+                    <li>Make a list of games/shows/etc. and rank your favorites</li>
+                    <li>List items in your wishlist and see which ones you <em>really</em> want</li>
+                    <li>Enter a list of tasks and prioritize them</li>
+                </ul>
+            </details>
+            <p>
+                This app uses your browser's local storage to save your place if
+                you leave this page. No information is collected, and there is no server.
+            </p>
         </div>
-        <div class="horizontal">
-            <button type="button" :enabled="can_compare" @click="select_preference(Preference.First)">First option</button>
-            <button type="button" :enabled="can_compare" @click="select_preference(Preference.NoPreference)">Neither option</button>
-            <button type="button" :enabled="can_compare" @click="select_preference(Preference.Second)">Right option</button>
-        </div>
-    </div>
 
-    <div>
-        <h2>Ideas:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Idea</th>
-                    <th>Elo</th>
-                    <th>Comparison Count</th>
-                    <th>Remove</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="idea in ideas_by_elo"
-                    :key="idea.id"
-                    :class="{accurate: idea.comparisons >= 5}">
-                    <td>{{ idea.name }}</td>
-                    <td>{{ idea.elo }}</td>
-                    <td>{{ idea.comparisons }}</td>
-                    <button type="button" @click="remove_idea(idea)">X</button>
-                </tr>
-            </tbody>
-        </table>
-        <button type="button" @click="clear">Clear</button>
-        <button type="button" @click="reset_comparisons">Reset Comparisons</button>
-    </div>
-    <div>
-        <button type="button" @click="export_state">Export</button>
-        <br/>
-        Import:
-        <input type="file" @change="import_state" accept=".json"/>
+        <div class="horizontal">
+            <div class="column vertical">
+                <div class="panel">
+                    <h2>Ideas</h2>
+                    <p>Add ideas to the list with the input below. The table is listed in order by Elo ranking.</p>
+                    <div class="centered">
+                        <input type="text" v-model="new_idea_name" placeholder="idea"/>
+                        <button type="button" @click="add_idea">Create idea</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Idea</th>
+                                <th>Elo</th>
+                                <th># Comparisons</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="idea in ideas_by_elo"
+                                :key="idea.id"
+                                :class="{accurate: idea.comparisons >= 5}">
+                                <td>{{ idea.name }}</td>
+                                <td class="centered">{{ idea.elo }}</td>
+                                <td class="centered">{{ idea.comparisons }}</td>
+                                <td class="centered"><button class="centered" type="button" @click="remove_idea(idea)">X</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="centered">
+                        <button type="button" @click="reset_comparisons">Reset ranking</button>
+                        <button type="button" @click="clear">Remove all ideas</button>
+                    </div>
+                </div>
+            </div>
+            <div class="column vertical">
+                <div class="panel compare">
+                    <h2>Compare</h2>
+                    <p>Choose your preference of the two ideas below. This will update the ELO ranking table</p>
+                    <div class="horizontal">
+                        <button class="compare-button" type="button" :enabled="can_compare" @click="select_preference(Preference.First)">{{ first_option?.name }}</button>
+                        <button class="compare-button" type="button" :enabled="can_compare" @click="select_preference(Preference.NoPreference)">No Preference</button>
+                        <button class="compare-button" type="button" :enabled="can_compare" @click="select_preference(Preference.Second)">{{second_option?.name}}</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Import/Export Ideas</h2>
+                    <p>Use the buttons below to export the current ranking to a JSON file. This file can be imported later or in another browser</p>
+                    Export: 
+                    <button type="button" @click="export_state">Export</button>
+                    <br/>
+                    Import:
+                    <input type="file" @change="import_state" accept=".json"/>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <style>
+
+.highlight-elo {
+    color: #1eb192;
+}
+
+a {
+    color: #1eb192;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222222;
+    color: #dddddd;
+    font-family: sans-serif;
+}
+
+.container {
+    width: 1000px;
+    margin: 0 auto;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-top: 0;
+}
+
+table {
+    margin: 10px auto;
+}
+
+th {
+    background-color: #333333;
+}
+
+td {
+    padding: 2px;
+}
+
+.panel {
+    background-color: #444444;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px;
+    width: 100%;
+}
+
+.compare-button {
+    width: 30%;
+    height: 100%;
+}
+
+.centered {
+    text-align: center;
+}
+
 .horizontal {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+}
+
+.vertical {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.column {
+    width: 450px;
 }
 
 .accurate {
     background-color: #1eb192;
     color: #1d1d1d;
+}
+
+@media screen and (max-width: 1024px) {
+    .container {
+        max-width: 80vh;
+    }
+
+    .column {
+        width: 80vh;
+    }
+
+    .panel {
+        box-sizing: border-box;
+        width: 80vh;
+    }
 }
 </style>

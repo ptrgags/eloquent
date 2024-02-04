@@ -288,7 +288,7 @@ async function import_state(event: Event) {
             <div class="column vertical">
                 <div class="panel compare">
                     <h2>Compare</h2>
-                    <p>Choose your preference of the two ideas below. This will update the ELO ranking table.</p>
+                    <p>Choose your preference of the two ideas below. This will update the Elo ranking table.</p>
                     <div class="horizontal">
                         <button class="compare-button" type="button" :enabled="can_compare" @click="select_preference(Preference.First)">{{ first_option?.name }}</button>
                         <button class="compare-button" type="button" :enabled="can_compare" @click="select_preference(Preference.NoPreference)">No Preference</button>

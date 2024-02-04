@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type ComputedRef, type Ref, ref, computed } from 'vue'
+import { type ComputedRef, type Ref, type StyleValue, ref, computed } from 'vue'
 import { type Idea, Preference, create_idea, update_ratings } from './ideas/Idea'
 
 interface PersistentState {
@@ -98,8 +98,46 @@ const second_option: ComputedRef<Idea | undefined> = computed(() => {
     return ideas_list.value[second_index]
 })
 
-const ideas_by_elo: ComputedRef<Idea[]> = computed(() => {
-    return [...ideas_list.value].sort((a, b) => b.elo - a.elo)
+interface WithStyle {
+    style: StyleValue
+}
+
+const PALETTE = [
+    "#00795e",
+    "#008c6d",
+    "#009f7b",
+    "#0fa886",
+    "#1eb190",
+    "#2eb89a",
+    "#3ebfa3",
+    "#53c9af",
+    "#68d3bb",
+    "#76d7c1",
+]
+
+function compute_style(idea: Idea): StyleValue {
+    const comparisons = idea.comparisons
+
+    let color_index = 0
+    if (comparisons > 0) {
+        color_index = Math.floor(Math.log2(comparisons))
+        color_index = Math.min(color_index, PALETTE.length)
+    }
+
+    return {
+        backgroundColor: PALETTE[color_index],
+        color: color_index < 5 ? "#eeeeee" : "#1d1d1d"
+    }
+}
+
+const ideas_by_elo: ComputedRef<(Idea & WithStyle)[]> = computed(() => {
+    const with_style = ideas_list.value.map(x => {
+        return {
+            ...x,
+            style: compute_style(x)
+        }
+    })
+    return with_style.sort((a, b) => b.elo - a.elo);
 })
 
 function add_idea() {
@@ -111,8 +149,8 @@ function add_idea() {
     saveState()
 }
 
-function remove_idea(idea: Idea) {
-    ideas_list.value = ideas_list.value.filter((x: Idea) => x !== idea)
+function remove_idea(id: number) {
+    ideas_list.value = ideas_list.value.filter((x: Idea) => x.id !== id)
 
     comparison_indices.value = choose_indices()
     saveState()
@@ -226,11 +264,11 @@ async function import_state(event: Event) {
                         <tbody>
                             <tr v-for="idea in ideas_by_elo"
                                 :key="idea.id"
-                                :class="{accurate: idea.comparisons >= 5}">
+                                :style="idea.style">
                                 <td>{{ idea.name }}</td>
                                 <td class="centered">{{ idea.elo }}</td>
                                 <td class="centered">{{ idea.comparisons }}</td>
-                                <td class="centered"><button class="centered" type="button" @click="remove_idea(idea)">X</button></td>
+                                <td class="centered"><button class="centered" type="button" @click="remove_idea(idea.id)">X</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -243,7 +281,7 @@ async function import_state(event: Event) {
             <div class="column vertical">
                 <div class="panel compare">
                     <h2>Compare</h2>
-                    <p>Choose your preference of the two ideas below. This will update the ELO ranking table</p>
+                    <p>Choose your preference of the two ideas below. This will update the ELO ranking table.</p>
                     <div class="horizontal">
                         <button class="compare-button" type="button" :enabled="can_compare" @click="select_preference(Preference.First)">{{ first_option?.name }}</button>
                         <button class="compare-button" type="button" :enabled="can_compare" @click="select_preference(Preference.NoPreference)">No Preference</button>
@@ -253,7 +291,7 @@ async function import_state(event: Event) {
 
                 <div class="panel">
                     <h2>Import/Export Ideas</h2>
-                    <p>Use the buttons below to export the current ranking to a JSON file. This file can be imported later or in another browser</p>
+                    <p>Use the buttons below to export the current ranking to a JSON file. This file can be imported later or in another browser.</p>
                     Export: 
                     <button type="button" @click="export_state">Export</button>
                     <br/>
@@ -342,10 +380,12 @@ td {
     width: 450px;
 }
 
+/*
 .accurate {
     background-color: #1eb192;
     color: #1d1d1d;
 }
+*/
 
 @media screen and (max-width: 1024px) {
     .container {

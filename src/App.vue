@@ -225,6 +225,9 @@ async function import_state(event: Event) {
 <template>
     <div class="container">
         <div class="panel">
+            <div class="gh-icon">
+                <a href="https://github.com/ptrgags/eloquent"><img alt="GitHub icon that links to the project repo" src="/assets/github-mark-white.svg" /></a>
+            </div>
             <h1><span class="highlight-elo">Elo</span>quent</h1>
             <br />
             <p>
@@ -312,6 +315,20 @@ async function import_state(event: Event) {
 
 <style>
 
+.gh-icon {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    position: absolute;
+    right: 20px;
+    z-index: 100;
+}
+
+.gh-icon img {
+    width: 32px;
+}
+
 .highlight-elo {
     color: #1eb192;
 }
@@ -387,25 +404,18 @@ td {
     width: 450px;
 }
 
-/*
-.accurate {
-    background-color: #1eb192;
-    color: #1d1d1d;
-}
-*/
-
 @media screen and (max-width: 1024px) {
     .container {
-        max-width: 80vh;
+        max-width: 80vw;
     }
 
     .column {
-        width: 80vh;
+        width: 80vw;
     }
 
     .panel {
         box-sizing: border-box;
-        width: 80vh;
+        width: 80vw;
     }
 }
 </style>

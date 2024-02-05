@@ -1,6 +1,6 @@
 {
-  "name": "idea-elo",
-  "version": "0.0.0",
+  "name": "eloquent",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,7 +13,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "pinia": "^2.1.7",
     "vue": "^3.3.11"
   },
   "devDependencies": {

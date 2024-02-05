@@ -139,8 +139,16 @@ npm run build
 
 ### Release
 
-When ready to release an update to the site, make sure main is up-to-date
+When ready to release an update to the site, do the following:
 
 ```sh
-git subtree push --prefix=dist origin gh-pages
+# Build the static site into the dist/ folder
+npm run build
+
+# Check in changes
+git add dist/
+git commit
+
+# This pushes the dist/ folder to origin/gh-pages as a git subtree.
+npm run deploy
 ```

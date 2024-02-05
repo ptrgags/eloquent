@@ -138,3 +138,9 @@ npm run build
 ```
 
 ### Release
+
+When ready to release an update to the site, make sure main is up-to-date
+
+```sh
+git subtree push --prefix=dist origin gh-pages
+```

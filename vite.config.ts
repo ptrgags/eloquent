@@ -10,6 +10,7 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
+      includeAssets: ['favicon.png', 'maskable_icon.png'],
       manifest: {
         name: 'Eloquent',
         short_name: 'Eloquent',
